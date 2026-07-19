@@ -4,10 +4,10 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
+    Modal,
     StyleSheet,
     SafeAreaView,
     ScrollView,
-    StatusBar,
 } from 'react-native'
 
 export default function SignupScreen({ navigation }) {
@@ -15,50 +15,36 @@ export default function SignupScreen({ navigation }) {
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [rememberMe, setRememberMe] = useState(false)
-    const [errors, setErrors] = useState({})
+    const [showModal, setShowModal] = useState(false)
 
-    const validate = () => {
-        const newErrors = {}
-        if (!email.trim()) {
-            newErrors.email = 'Email is required'
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            newErrors.email = 'Enter a valid email address'
+    const handleContinue = () => {
+        if (!rememberMe) {
+            setShowModal(true)
+        } else {
+            navigation.navigate('Home')
         }
-        if (!password.trim()) {
-            newErrors.password = 'Password is required'
-        } else if (password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters'
-        }
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
     }
 
-    const handleSignup = () => {
-        if (validate()) {
-            console.log('Signing up:', { email, password, rememberMe })
-            // Navigate to next screen when ready
-            // navigation.navigate('Home')
-        }
+    const handleModalContinue = () => {
+        setShowModal(false)
+        navigation.navigate('Home')
+    }
+
+    const handleGoBack = () => {
+        setShowModal(false)
     }
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#E8EAF0" />
-            <ScrollView
-                contentContainerStyle={styles.scroll}
-                keyboardShouldPersistTaps="handled"
-            >
+        <SafeAreaView style={styles.screen}>
+            <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
                 {/* Header */}
                 <View style={styles.header}>
-                    <TouchableOpacity
-                        style={styles.backBtn}
-                        onPress={() => navigation?.goBack()}
-                    >
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                         <Text style={styles.backArrow}>←</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Create Profile</Text>
-                    <View style={styles.headerSpacer} />
+                    <Text style={styles.headerTitle}>Create Profile</Text>
+                    <View style={styles.backBtn} />
                 </View>
 
                 {/* Form */}
@@ -66,107 +52,126 @@ export default function SignupScreen({ navigation }) {
 
                     {/* Email */}
                     <Text style={styles.label}>Email</Text>
-                    <TextInput
-                        style={[styles.input, errors.email && styles.inputError]}
-                        placeholder="Email"
-                        placeholderTextColor="#9DA3C8"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                    />
-                    {errors.email && (
-                        <Text style={styles.errorText}>{errors.email}</Text>
-                    )}
+                    <View style={styles.inputBox}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            placeholderTextColor="#9B9ECC"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                    </View>
 
                     {/* Password */}
-                    <Text style={[styles.label, { marginTop: 24 }]}>Password</Text>
-                    <View style={styles.passwordWrapper}>
+                    <Text style={styles.label}>Password</Text>
+                    <View style={styles.inputBox}>
                         <TextInput
-                            style={[styles.input, styles.passwordInput, errors.password && styles.inputError]}
+                            style={styles.input}
                             placeholder="Create Password"
-                            placeholderTextColor="#9DA3C8"
+                            placeholderTextColor="#9B9ECC"
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry={!showPassword}
-                            autoCapitalize="none"
                         />
                         <TouchableOpacity
-                            style={styles.eyeBtn}
                             onPress={() => setShowPassword(!showPassword)}
+                            style={styles.eyeBtn}
                         >
-                            <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '🙈'}</Text>
+                            <Text style={styles.eyeIcon}>{showPassword ? '🙈' : '👁️'}</Text>
                         </TouchableOpacity>
                     </View>
-                    {errors.password && (
-                        <Text style={styles.errorText}>{errors.password}</Text>
-                    )}
 
                     {/* Remember Me */}
                     <TouchableOpacity
-                        style={styles.rememberRow}
+                        style={styles.checkRow}
                         onPress={() => setRememberMe(!rememberMe)}
+                        activeOpacity={0.7}
                     >
                         <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
                             {rememberMe && <Text style={styles.checkmark}>✓</Text>}
                         </View>
-                        <Text style={styles.rememberText}>Remember me</Text>
+                        <Text style={styles.checkLabel}>Remember me</Text>
                     </TouchableOpacity>
 
-                    {/* Or Divider */}
+                    {/* Or */}
                     <Text style={styles.orText}>Or</Text>
 
-                    {/* Biometric Options */}
+                    {/* Biometrics */}
                     <View style={styles.biometricRow}>
                         <TouchableOpacity style={styles.biometricBtn}>
-                            <Text style={styles.biometricIcon}>🫆</Text>
+                            <Text style={styles.biometricIcon}>𝍖</Text>
                             <Text style={styles.biometricLabel}>Fingerprint</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.biometricBtn}>
-                            <Text style={styles.biometricIcon}>🤳</Text>
+                            <Text style={styles.biometricIcon}>⊡</Text>
                             <Text style={styles.biometricLabel}>Face Scan</Text>
                         </TouchableOpacity>
                     </View>
 
                 </View>
 
-                {/* Bottom Actions */}
-                <View style={styles.bottomActions}>
-
-                    {/* Add Caregiver Button */}
-                    <TouchableOpacity style={styles.caregiverBtn} onPress={handleSignup}>
-                        <Text style={styles.caregiverBtnText}>Add caregiver/child</Text>
+                {/* Bottom */}
+                <View style={styles.bottom}>
+                    <TouchableOpacity style={styles.continueBtn} onPress={handleContinue}>
+                        <Text style={styles.continueBtnText}>Continue</Text>
                     </TouchableOpacity>
 
-                    {/* Skip for now */}
-                    <TouchableOpacity style={styles.skipBtn}>
-                        <Text style={styles.skipBtnText}>Skip for now</Text>
-                    </TouchableOpacity>
-
-                    {/* Log in link */}
-                    <View style={styles.loginRow}>
-                        <Text style={styles.loginText}>Have a profile? </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.loginLink}>Log in</Text>
-                        </TouchableOpacity>
-                    </View>
-
+                    <Text style={styles.loginText}>
+                        Have a profile?{' '}
+                        <Text
+                            style={styles.loginLink}
+                            onPress={() => navigation.navigate('Login')}
+                        >
+                            Log in
+                        </Text>
+                    </Text>
                 </View>
 
             </ScrollView>
+
+            {/* Remember Me Modal */}
+            <Modal visible={showModal} transparent animationType="fade">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalCard}>
+                        <Text style={styles.modalText}>
+                            Hello! You didn't click{' '}
+                            <Text style={styles.modalBold}>"Remember me"</Text>
+                            {' '}If you choose to continue with this off you will have to input your details again. Would you still like to continue into the app?
+                        </Text>
+
+                        <TouchableOpacity
+                            style={styles.modalContinueBtn}
+                            onPress={handleModalContinue}
+                        >
+                            <Text style={styles.modalContinueText}>Continue</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.modalGoBackBtn}
+                            onPress={handleGoBack}
+                        >
+                            <Text style={styles.modalGoBackText}>
+                                Go back and click "Remember me"
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
+    screen: {
         flex: 1,
-        backgroundColor: '#E8EAF0',
+        backgroundColor: '#FFFFFF',
     },
     scroll: {
         flexGrow: 1,
-        paddingHorizontal: 24,
-        paddingBottom: 40,
+        justifyContent: 'space-between',
     },
 
     // Header
@@ -174,118 +179,105 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        paddingHorizontal: 20,
         paddingTop: 20,
-        marginBottom: 40,
+        paddingBottom: 10,
     },
     backBtn: {
-        width: 40,
-        height: 40,
+        width: 44,
+        height: 44,
         justifyContent: 'center',
     },
     backArrow: {
         fontSize: 24,
-        color: '#1a1a2e',
         fontWeight: 'bold',
+        color: '#1A1A1A',
     },
-    title: {
+    headerTitle: {
         fontSize: 22,
-        fontWeight: '700',
-        color: '#1a1a2e',
+        fontWeight: 'bold',
+        color: '#1A1A1A',
+        flex: 1,
         textAlign: 'center',
-    },
-    headerSpacer: {
-        width: 40,
     },
 
     // Form
     form: {
-        flex: 1,
+        paddingHorizontal: 24,
+        paddingTop: 20,
     },
     label: {
         fontSize: 18,
-        fontWeight: '700',
-        color: '#1a1a2e',
+        fontWeight: 'bold',
+        color: '#1A1A1A',
         marginBottom: 10,
     },
-    input: {
-        backgroundColor: '#E8EAF0',
+    inputBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
         borderWidth: 1.5,
-        borderColor: '#5C6BC0',
-        borderRadius: 10,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
+        borderColor: '#3D3F8F',
+        borderRadius: 30,
+        paddingHorizontal: 18,
+        height: 56,
+        marginBottom: 28,
+    },
+    input: {
+        flex: 1,
         fontSize: 16,
-        color: '#1a1a2e',
-    },
-    inputError: {
-        borderColor: '#ef4444',
-    },
-    errorText: {
-        color: '#ef4444',
-        fontSize: 12,
-        marginTop: 4,
-    },
-
-    // Password
-    passwordWrapper: {
-        position: 'relative',
-    },
-    passwordInput: {
-        paddingRight: 50,
+        color: '#1A1A1A',
     },
     eyeBtn: {
-        position: 'absolute',
-        right: 14,
-        top: 12,
+        padding: 4,
     },
     eyeIcon: {
-        fontSize: 20,
+        fontSize: 18,
     },
 
     // Remember Me
-    rememberRow: {
+    checkRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 16,
-        gap: 8,
+        gap: 10,
+        marginBottom: 32,
     },
     checkbox: {
         width: 20,
         height: 20,
-        borderWidth: 1.5,
-        borderColor: '#5C6BC0',
+        borderWidth: 2,
+        borderColor: '#3D3F8F',
         borderRadius: 4,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#E8EAF0',
     },
     checkboxChecked: {
-        backgroundColor: '#5C6BC0',
+        backgroundColor: '#3D3F8F',
     },
     checkmark: {
-        color: 'white',
+        color: '#FFFFFF',
         fontSize: 12,
         fontWeight: 'bold',
     },
-    rememberText: {
-        fontSize: 15,
-        color: '#1a1a2e',
+    checkLabel: {
+        fontSize: 16,
+        color: '#1A1A1A',
     },
 
-    // Or divider
+    // Or
     orText: {
         fontSize: 20,
-        fontWeight: '700',
-        color: '#1a1a2e',
+        fontWeight: 'bold',
         textAlign: 'center',
-        marginVertical: 28,
+        color: '#1A1A1A',
+        marginBottom: 24,
     },
 
     // Biometrics
     biometricRow: {
         flexDirection: 'row',
         justifyContent: 'center',
-        gap: 40,
+        gap: 60,
+        marginBottom: 40,
     },
     biometricBtn: {
         alignItems: 'center',
@@ -293,60 +285,93 @@ const styles = StyleSheet.create({
     },
     biometricIcon: {
         fontSize: 36,
+        color: '#3D3F8F',
     },
     biometricLabel: {
-        fontSize: 15,
-        color: '#3D4A9A',
-        fontWeight: '500',
+        fontSize: 16,
+        color: '#3D3F8F',
+        fontWeight: '600',
     },
 
-    // Bottom Actions
-    bottomActions: {
-        marginTop: 48,
+    // Bottom
+    bottom: {
+        paddingHorizontal: 24,
+        paddingBottom: 32,
+        alignItems: 'center',
         gap: 16,
     },
-    caregiverBtn: {
-        backgroundColor: 'white',
+    continueBtn: {
+        width: '100%',
+        height: 56,
         borderWidth: 1.5,
-        borderColor: '#5C6BC0',
-        borderRadius: 12,
-        paddingVertical: 18,
-        alignItems: 'center',
-    },
-    caregiverBtnText: {
-        fontSize: 18,
-        color: '#3D4A9A',
-        fontWeight: '600',
-    },
-    skipBtn: {
-        backgroundColor: 'transparent',
-        borderWidth: 1.5,
-        borderColor: '#5C6BC0',
-        borderRadius: 50,
-        paddingVertical: 12,
-        alignItems: 'center',
-        alignSelf: 'center',
-        paddingHorizontal: 32,
-    },
-    skipBtnText: {
-        fontSize: 15,
-        color: '#3D4A9A',
-        fontWeight: '600',
-    },
-    loginRow: {
-        flexDirection: 'row',
+        borderColor: '#3D3F8F',
+        borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 8,
+    },
+    continueBtnText: {
+        fontSize: 18,
+        color: '#3D3F8F',
+        fontWeight: '600',
     },
     loginText: {
         fontSize: 14,
-        color: '#1a1a2e',
-        fontWeight: '600',
+        color: '#1A1A1A',
     },
     loginLink: {
-        fontSize: 14,
-        color: '#3D4A9A',
+        color: '#3D3F8F',
+        fontWeight: 'bold',
+        textDecorationLine: 'underline',
+    },
+
+    // Modal
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.35)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 32,
+    },
+    modalCard: {
+        backgroundColor: '#2D3178',
+        borderRadius: 16,
+        padding: 28,
+        alignItems: 'center',
+        gap: 16,
+    },
+    modalText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        textAlign: 'center',
+        lineHeight: 26,
+    },
+    modalBold: {
+        fontWeight: 'bold',
+    },
+    modalContinueBtn: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 30,
+        paddingVertical: 12,
+        paddingHorizontal: 40,
+        width: '100%',
+        alignItems: 'center',
+    },
+    modalContinueText: {
+        color: '#1A1A1A',
+        fontSize: 16,
         fontWeight: '600',
+    },
+    modalGoBackBtn: {
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        borderRadius: 30,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        width: '100%',
+        alignItems: 'center',
+    },
+    modalGoBackText: {
+        color: '#FFFFFF',
+        fontSize: 13,
+        textAlign: 'center',
     },
 })
