@@ -8,6 +8,10 @@ import HomeScreen from './screens/HomeScreen'
 import AddCaregiverScreen from './screens/AddCaregiverScreen'
 import GenerateCodeScreen from './screens/GenerateCodeScreen'
 import EnterAccessCodeScreen from './screens/EnterAccessCodeScreen'
+import AppointmentsScreen from './screens/AppointmentsScreen'
+import CreateAppointmentScreen from './screens/CreateAppointmentScreen'
+import SetReminderScreen from './screens/SetReminderScreen'
+import ConfirmAppointmentScreen from './screens/ConfirmAppointmentScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -23,6 +27,10 @@ export default function App() {
         <Stack.Screen name="AddCaregiver" component={AddCaregiverScreen} />
         <Stack.Screen name="GenerateCode" component={GenerateCodeScreen} />
         <Stack.Screen name="EnterAccessCode" component={EnterAccessCodeScreen} />
+        <Stack.Screen name="Appointments" component={AppointmentsScreen} />
+        <Stack.Screen name="CreateAppointment" component={CreateAppointmentScreen} />
+        <Stack.Screen name="SetReminder" component={SetReminderScreen} />
+        <Stack.Screen name="ConfirmAppointment" component={ConfirmAppointmentScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
