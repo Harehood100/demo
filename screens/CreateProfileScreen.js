@@ -6,10 +6,7 @@ import Checkbox from '../components/Checkbox'
 import Biometrics from '../components/Biometrics'
 import RememberMeModal from '../components/RememberMeModal'
 
-// source = 'signup'      → came from Create Profile "Log in" link
-// source = 'switchAccount' → came from Welcome Back "Switch Account"
-export default function LoginScreen({ navigation, route }) {
-    const source = route?.params?.source || 'signup'
+export default function CreateProfileScreen({ navigation }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [rememberMe, setRememberMe] = useState(false)
@@ -22,11 +19,7 @@ export default function LoginScreen({ navigation, route }) {
     return (
         <SafeAreaView style={styles.screen}>
             <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-                <ScreenHeader
-                    title="Log in"
-                    subtitle={'Remember to save your details so\nyou dont have to input them again'}
-                    onBack={() => navigation.goBack()}
-                />
+                <ScreenHeader title="Create Profile" onBack={() => navigation.goBack()} />
 
                 <View style={styles.form}>
                     <Text style={styles.label}>Email</Text>
@@ -47,6 +40,10 @@ export default function LoginScreen({ navigation, route }) {
                     <TouchableOpacity style={styles.continueBtn} onPress={handleContinue}>
                         <Text style={styles.continueBtnText}>Continue</Text>
                     </TouchableOpacity>
+                    <Text style={styles.loginText}>
+                        Have a profile?{' '}
+                        <Text style={styles.loginLink} onPress={() => navigation.navigate('Login', { source: 'signup' })}>Log in</Text>
+                    </Text>
                 </View>
             </ScrollView>
 
@@ -66,7 +63,9 @@ const styles = StyleSheet.create({
     label: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 10 },
     gap: { height: 20 },
     or: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: '#1A1A1A', marginVertical: 24 },
-    bottom: { paddingHorizontal: 24, paddingBottom: 32 },
+    bottom: { paddingHorizontal: 24, paddingBottom: 32, gap: 14, alignItems: 'center' },
     continueBtn: { width: '100%', height: 56, borderWidth: 1.5, borderColor: '#3D3F8F', borderRadius: 30, justifyContent: 'center', alignItems: 'center' },
     continueBtnText: { fontSize: 18, color: '#3D3F8F', fontWeight: '600' },
+    loginText: { fontSize: 14, color: '#1A1A1A' },
+    loginLink: { color: '#3D3F8F', fontWeight: 'bold', textDecorationLine: 'underline' },
 })
